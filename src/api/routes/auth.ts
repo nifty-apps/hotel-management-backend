@@ -31,4 +31,12 @@ export default (app: Router) => {
       return errorRes({res: res, errorMessage: 'Internal server error!'});
     }
   });
+
+  router.post('/login', async (req, res) => {
+    try {
+
+    } catch (error) {
+
+    }
+  });
 };

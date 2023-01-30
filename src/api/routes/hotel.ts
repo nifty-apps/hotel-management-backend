@@ -5,11 +5,11 @@ import {errorRes, successRes} from '../common/response';
 
 const router = Router();
 export default (app: Router) => {
-  app.use('/hotel', router);
+  app.use('/hotels', router);
 
   const hotelService = new HotelService();
 
-  router.post('/add', checkLogin, async (req, res) => {
+  router.post('/', checkLogin, async (req, res) => {
     try {
       const result = await hotelService.addHotel(req.body, req.user._id);
       if (result instanceof Error) {
