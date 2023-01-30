@@ -12,6 +12,12 @@ export default (app: Router) => {
   router.post('/add', checkLogin, async (req, res) => {
     try {
       const result = await hotelService.addHotel(req.body, req.user._id);
+      if (result instanceof Error) {
+        return errorRes({
+          res,
+          errorMessage: 'Hotel name is already exists !',
+        });
+      }
       return successRes({res, data: result});
     } catch (error) {
       return errorRes({res, errorMessage: 'Serverside error!'});
