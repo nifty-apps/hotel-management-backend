@@ -34,9 +34,19 @@ export default (app: Router) => {
 
   router.post('/login', async (req, res) => {
     try {
+      const result = await authService.login(req.body);
+      if (result instanceof Error) {
+        return errorRes({res, errorMessage: result.message});
+      };
+      if (result.token) {
+        res.setHeader('access-token', result.token);
+      } else {
+        errorRes({res, errorMessage: result.error || 'Something went wrong'});
+      }
 
+      return successRes({res, message: 'Login successfuly'});
     } catch (error) {
-
+      errorRes({res, errorMessage: 'Server side error!'});
     }
   });
 };

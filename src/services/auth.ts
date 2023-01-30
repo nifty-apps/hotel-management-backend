@@ -31,4 +31,32 @@ export default class AuthService {
       return error as Error;
     }
   }
+
+  async login(loginCredential: any) {
+    try {
+      const user = await User.findOne({
+        email: loginCredential.email,
+      }).select('+password');
+      if (user) {
+        const isValidPassword = await bcrypt.compare(
+          loginCredential.password,
+          user.password,
+        );
+        if (isValidPassword) {
+          const token = jwt.sign({id: user._id}, config.authSecret, {
+            expiresIn: '30d',
+          });
+
+          const {password, ...userData} = user.toJSON();
+          password;
+          return {userData, token};
+        } else {
+          return {error: 'Invalid password!'};
+        }
+      }
+      return Error('User not found!');
+    } catch (error) {
+      return error as Error;
+    }
+  }
 }
