@@ -15,12 +15,12 @@ export default (app: Router) => {
       if (result instanceof Error) {
         return errorRes({
           res,
-          errorMessage: 'Hotel name is already exists !',
+          message: 'Hotel name is already exists !',
         });
       }
       return successRes({res, data: result});
     } catch (error) {
-      return errorRes({res, errorMessage: 'Serverside error!'});
+      return errorRes({res, message: 'Serverside error!'});
     }
   });
 };

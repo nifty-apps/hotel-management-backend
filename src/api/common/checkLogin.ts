@@ -14,7 +14,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       const user = await User.findById(payload.id);
       if (!user) {
         return errorRes({
-          res, errorMessage: 'Unauthorized Access',
+          res, message: 'Unauthorized Access',
           statusCode: 401,
         });
       }
@@ -22,13 +22,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       return next();
     } catch (error) {
       return errorRes({
-        res, errorMessage: 'Unauthorized Access',
+        res, message: 'Unauthorized Access',
         statusCode: 401,
       });
     }
   } else {
     return errorRes({
-      res, errorMessage: 'Unauthorized Access',
+      res, message: 'Unauthorized Access',
       statusCode: 401,
     });
   }

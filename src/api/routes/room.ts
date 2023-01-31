@@ -17,7 +17,7 @@ export default (app: Router) => {
       if (error) {
         return errorRes({
           res,
-          errorMessage: error.message, statusCode: 403,
+          message: error.message, statusCode: 403,
         });
       }
       const result = await roomService.addRoom({
@@ -30,7 +30,7 @@ export default (app: Router) => {
         data: result,
       });
     } catch (error) {
-      return errorRes({res, errorMessage: 'Server side error!'});
+      return errorRes({res, message: 'Server side error!'});
     }
   });
 };

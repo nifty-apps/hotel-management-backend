@@ -14,21 +14,28 @@ export default (app: Router) => {
       if (error) {
         return errorRes({
           res,
-          errorMessage: error.message,
+          message: error.message,
           statusCode: 400,
         });
       };
       const result = await authService.registration(req.body);
       if (result instanceof Error) {
-        return errorRes({res, errorMessage: result.message});
+        return errorRes({res, message: result.message});
       }
-      res.setHeader('access-token', result.token);
+      if (result.message) {
+        return errorRes({res, message: result.message, statusCode: 403});
+      }
+      if (result.token) {
+        res.setHeader('access-token', result.token);
+      }
+
       return successRes({
         res, message: 'Regiration successfuly!',
         data: result,
+        statusCode: 201,
       });
     } catch (error) {
-      return errorRes({res: res, errorMessage: 'Internal server error!'});
+      return errorRes({res: res, message: 'Internal server error!'});
     }
   });
 
@@ -36,17 +43,19 @@ export default (app: Router) => {
     try {
       const result = await authService.login(req.body);
       if (result instanceof Error) {
-        return errorRes({res, errorMessage: result.message});
+        return errorRes({res, message: result.message});
       };
+      if (result.message) {
+        return errorRes({res, message: result.message, statusCode: 403});
+      }
       if (result.token) {
         res.setHeader('access-token', result.token);
-      } else {
-        errorRes({res, errorMessage: result.error || 'Something went wrong'});
       }
+
 
       return successRes({res, message: 'Login successfuly'});
     } catch (error) {
-      errorRes({res, errorMessage: 'Server side error!'});
+      errorRes({res, message: 'Server side error!'});
     }
   });
 };

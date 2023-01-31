@@ -8,13 +8,14 @@ export default class AuthService {
   async registration(userData: IUser) {
     try {
       const user = await User.findOne({
-        $or: [{
-          email: userData.email,
-        }, {phone: userData.phone}],
+        email: userData.email,
       });
-      if (user?.email == userData.email) {
-        return Error('Email is already registered!');
+      if (user) {
+        if (user?.email == userData.email) {
+          return {message: 'Email is already registered!'};
+        }
       }
+
       const hashPassword = await bcrypt.hash(userData.password, 10);
       userData.password = hashPassword;
       const data = await User.create(userData);
@@ -51,10 +52,10 @@ export default class AuthService {
           password;
           return {userData, token};
         } else {
-          return {error: 'Invalid password!'};
+          return {message: 'Invalid password!'};
         }
       }
-      return Error('User not found!');
+      return {message: 'User not found!'};
     } catch (error) {
       return error as Error;
     }

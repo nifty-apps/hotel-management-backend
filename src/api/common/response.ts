@@ -8,7 +8,7 @@ export interface ISuccessData {
 }
 export interface IErrorData {
   res: Response;
-  errorMessage: string;
+  message: string;
   statusCode?: number;
 }
 export function successRes(response: ISuccessData): Response {
@@ -20,7 +20,7 @@ export function successRes(response: ISuccessData): Response {
 }
 export function errorRes(response: IErrorData): Response {
   return response.res.status(response.statusCode ?? 500).json({
-    errorMessage: response.errorMessage,
+    message: response.message,
   });
 }
 
