@@ -1,22 +1,20 @@
 import {Router} from 'express';
-import HotelService from '../../services/hotel';
+import DashboardService from '../../services/dashboard';
 import checkLogin from '../common/checkLogin';
 import {errorRes, successRes} from '../common/response';
-
 const router = Router();
+
 export default (app: Router) => {
-  app.use('/hotels', router);
+  app.use('/dashboard', router);
+  const dashboardService = new DashboardService();
 
-  const hotelService = new HotelService();
 
-  router.post('/', checkLogin, async (req, res) => {
+  router.get('/info', checkLogin, async (req, res) => {
     try {
-      const result = await hotelService.addHotel(req.body, req.user._id);
+      const result = await dashboardService.getDashboardInfo(req.user);
+
       if (result instanceof Error) {
-        return errorRes({
-          res,
-          message: 'Server side error !',
-        });
+        return errorRes({res, message: result.message});
       }
       return successRes({res, data: result});
     } catch (error) {

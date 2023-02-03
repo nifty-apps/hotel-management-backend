@@ -37,7 +37,7 @@ export default class AuthService {
     try {
       const user = await User.findOne({
         email: loginCredential.email,
-      }).select('+password');
+      }).select('+password').populate('hotel');
       if (user) {
         const isValidPassword = await bcrypt.compare(
           loginCredential.password,
@@ -48,9 +48,9 @@ export default class AuthService {
             expiresIn: '30d',
           });
 
-          const {password, ...userData} = user.toJSON();
+          const {password, ...data} = user.toJSON();
           password;
-          return {userData, token};
+          return {data, token};
         } else {
           return {message: 'Invalid password!'};
         }

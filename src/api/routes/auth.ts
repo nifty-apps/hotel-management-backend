@@ -53,7 +53,7 @@ export default (app: Router) => {
       }
 
 
-      return successRes({res, message: 'Login successfuly'});
+      return successRes({res, message: 'Login successfuly', data: result.data});
     } catch (error) {
       errorRes({res, message: 'Server side error!'});
     }

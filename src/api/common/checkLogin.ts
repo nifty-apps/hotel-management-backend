@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import config from '../../config';
+import Logger from '../../loaders/logger';
 import User from '../../models/user';
 import {errorRes} from './response';
 export default async (req: Request, res: Response, next: NextFunction) => {
@@ -12,6 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         JwtPayload;
       // attach user to the request
       const user = await User.findById(payload.id);
+      Logger.info(user);
       if (!user) {
         return errorRes({
           res, message: 'Unauthorized Access',
