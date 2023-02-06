@@ -20,10 +20,16 @@ export default (app: Router) => {
           message: error.message, statusCode: 403,
         });
       }
-      const result = await roomService.addRoom({
+      const result: any = await roomService.addRoom({
         ...req.body,
         hotel: req.params.hotelId,
       });
+      if (result instanceof Error) {
+        return errorRes({res, message: result.message});
+      };
+      if (result.message) {
+        return errorRes({res, message: result.message, statusCode: 409});
+      }
       return successRes({
         res,
         message: 'Room created successfuly!',

@@ -2,7 +2,7 @@
 import {model, Schema} from 'mongoose';
 
 export interface IRoom {
-  floor: number,
+  floor: String,
   number: string,
   roomType: string,
   rent: number,
@@ -11,7 +11,7 @@ export interface IRoom {
 
 const schema = new Schema<IRoom>({
   floor: {
-    type: Number,
+    type: String,
     trim: true,
     required: true,
   },

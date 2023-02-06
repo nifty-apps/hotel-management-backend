@@ -6,7 +6,7 @@ const roomValidator = {
   // Registration validation
   validateRoom(req: Request) {
     const schema = Joi.object({
-      floor: Joi.number().required(),
+      floor: Joi.string().required(),
       number: Joi.string().required(),
       roomType: Joi.string().required(),
       rent: Joi.number().required(),
