@@ -32,8 +32,9 @@ export default (app: Router) => {
       }
       return successRes({
         res,
-        message: 'Room created successfuly!',
+        message: 'The room was created successfully!',
         data: result,
+        statusCode: 201,
       });
     } catch (error) {
       return errorRes({res, message: 'Server side error!'});

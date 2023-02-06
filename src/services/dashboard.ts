@@ -1,10 +1,10 @@
+
 import Room from '../models/room';
-import {IUser} from '../models/user';
 
 export default class DashboardService {
-  async getDashboardInfo(user: IUser) {
+  async getDashboardInfo(userId: string) {
     try {
-      const totalRooms = await Room.find({hotel: user.hotel}).count();
+      const totalRooms = await Room.find({hotel: userId}).count();
       const summary = {
         totalRooms,
         bookedRooms: 0,

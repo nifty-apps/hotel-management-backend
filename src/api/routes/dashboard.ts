@@ -2,16 +2,18 @@ import {Router} from 'express';
 import DashboardService from '../../services/dashboard';
 import checkLogin from '../common/checkLogin';
 import {errorRes, successRes} from '../common/response';
-const router = Router();
+
 
 export default (app: Router) => {
-  app.use('/dashboard', router);
+  const router = Router({mergeParams: true});
+  app.use('/dashboard/:hotelId/info', router);
   const dashboardService = new DashboardService();
 
 
-  router.get('/info', checkLogin, async (req, res) => {
+  router.get('/', checkLogin, async (req, res) => {
     try {
-      const result = await dashboardService.getDashboardInfo(req.user);
+      const result =
+        await dashboardService.getDashboardInfo(req.params.hotelId);
 
       if (result instanceof Error) {
         return errorRes({res, message: result.message});
