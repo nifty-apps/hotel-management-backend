@@ -1,14 +1,16 @@
 import {Router} from 'express';
-import authRoute from './routes/auth';
-import dashboardRoute from './routes/dashboard';
-import hotelRoute from './routes/hotel';
-import roomRoute from './routes/room';
+import authRoutes from './routes/auth';
+import bookingRoutes from './routes/booking';
+import dashboardRoutes from './routes/dashboard';
+import hotelRoutes from './routes/hotel';
+import roomRoutes from './routes/room';
+
 export default () => {
   const app = Router();
-  authRoute(app);
-  hotelRoute(app);
-  roomRoute(app);
-  dashboardRoute(app);
-
+  authRoutes(app);
+  hotelRoutes(app);
+  roomRoutes(app);
+  dashboardRoutes(app);
+  bookingRoutes(app);
   return app;
 };

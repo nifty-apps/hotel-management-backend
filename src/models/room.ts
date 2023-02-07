@@ -2,7 +2,7 @@
 import {model, Schema} from 'mongoose';
 
 export interface IRoom {
-  floor: String,
+  floor: string,
   number: string,
   roomType: string,
   rent: number,
