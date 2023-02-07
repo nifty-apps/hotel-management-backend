@@ -1,0 +1,22 @@
+name: Deploy to main
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+  deploy:
+    name: Deploy dev
+    runs-on: ubuntu-latest
+    environment: development
+    
+    
+    steps:
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.DEPLOY_HOST}}
+          username: ${{secrets.DEPLOY_USER}}
+          key: ${{secrets.DEPLOY_KEY}}
+          script: sh deploy-hotel-management.sh
