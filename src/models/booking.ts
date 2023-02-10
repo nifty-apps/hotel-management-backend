@@ -11,6 +11,7 @@ export interface IBooking {
   checkIn: Date;
   checkOut: Date;
   room: Schema.Types.ObjectId;
+  hotel: Schema.Types.ObjectId;
 }
 
 const schema = new Schema<IBooking>({
@@ -45,8 +46,13 @@ const schema = new Schema<IBooking>({
   },
   room: {
     type: Schema.Types.ObjectId,
+    ref: 'Room',
     required: true,
-    trim: true,
+  },
+  hotel: {
+    type: Schema.Types.ObjectId,
+    ref: 'Hotel',
+    required: true,
   },
 }, {
   timestamps: true,

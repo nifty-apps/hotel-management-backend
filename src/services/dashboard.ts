@@ -1,8 +1,9 @@
 
+import {ObjectId} from 'mongoose';
 import Room from '../models/room';
 
 export default class DashboardService {
-  async getDashboardInfo(userId: string) {
+  async getDashboardInfo(userId: ObjectId) {
     try {
       const totalRooms = await Room.find({hotel: userId}).count();
       const summary = {

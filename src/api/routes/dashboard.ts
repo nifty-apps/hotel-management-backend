@@ -6,14 +6,14 @@ import {errorRes, successRes} from '../common/response';
 
 export default (app: Router) => {
   const router = Router({mergeParams: true});
-  app.use('/dashboard/:hotelId/info', router);
+  app.use('/dashboard', router);
   const dashboardService = new DashboardService();
 
 
-  router.get('/', checkLogin, async (req, res) => {
+  router.get('/info', checkLogin, async (req, res) => {
     try {
       const result =
-        await dashboardService.getDashboardInfo(req.params.hotelId);
+        await dashboardService.getDashboardInfo(req.user.hotel);
 
       if (result instanceof Error) {
         return errorRes({res, message: result.message});

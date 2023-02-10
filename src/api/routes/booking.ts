@@ -23,6 +23,7 @@ export default (app: Router) => {
       const result = await bookingService.bookRoom({
         ...req.body,
         room: req.params.roomId,
+        hotel: req.user.hotel,
       });
 
       if (result instanceof Error) {

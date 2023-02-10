@@ -50,4 +50,42 @@ export default (app: Router) => {
       return errorRes({res, message: 'Server side error!'});
     }
   });
+
+  // get recent booked rooms
+  router.get('/recent/bookings', checkLogin, async (req, res) => {
+    try {
+      const result = await roomService.getRecentBookings(req.user.hotel);
+      return successRes({res, data: result});
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
+
+  // get today bookings
+  router.get('/todays/bookings', checkLogin, async (req, res) => {
+    try {
+      const result = await roomService.getTodayBookings(req.user.hotel);
+
+      return successRes({res, data: result});
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
+  // delete room
+
+  router.delete('/:roomId', checkLogin, async (req, res) => {
+    try {
+      const result = await roomService.deleteRoom(req.params.roomId);
+      if (result instanceof Error) {
+        return errorRes({res, message: result.message, statusCode: 404});
+      }
+      successRes({
+        res,
+        message: 'The room has been deleted successfully!',
+        data: result,
+      });
+    } catch (e) {
+
+    }
+  });
 };

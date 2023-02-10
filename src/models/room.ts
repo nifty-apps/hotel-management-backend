@@ -32,6 +32,7 @@ const schema = new Schema<IRoom>({
   },
   hotel: {
     type: Schema.Types.ObjectId,
+    ref: 'Hotel',
     trim: true,
     required: true,
   },
