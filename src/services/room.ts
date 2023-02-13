@@ -38,15 +38,26 @@ export default class RoomService {
       .limit(30);
     return bookings;
   }
-  async getTodayBookings(hotelId: Object) {
-    Logger.info(new Date().toDateString());
+  async getTodayBooked(hotelId: Object) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
     const bookings = await Booking.find({
       hotel: hotelId,
-      checkIn: {$gte: new Date()},
-    })
-      .populate('room')
-      .sort({createdAt: 'desc'});
+      checkIn: {$gte: start, $lt: end},
+    });
     return bookings;
+  }
+
+  async updateRoomInfo(roomData: IRoom, roomId: any) {
+    const room = await Room.findByIdAndUpdate(roomId,
+      {$set: roomData},
+      {new: true});
+    if (room == null) {
+      return Error('The room is not found!');
+    }
+    return room;
   }
 
   async deleteRoom(roomId: any) {

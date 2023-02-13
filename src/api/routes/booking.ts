@@ -21,9 +21,11 @@ export default (app: Router) => {
         });
       }
       const result = await bookingService.bookRoom({
-        ...req.body,
         room: req.params.roomId,
         hotel: req.user.hotel,
+        ...req.body,
+        checkIn: new Date(req.body.checkIn),
+        checkOut: new Date(req.body.checkOut),
       });
 
       if (result instanceof Error) {

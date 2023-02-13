@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import Logger from '../../loaders/logger';
 import RoomService from '../../services/room';
 import checkLogin from '../common/checkLogin';
 import {errorRes, successRes} from '../common/response';
@@ -62,17 +63,44 @@ export default (app: Router) => {
   });
 
   // get today bookings
-  router.get('/todays/bookings', checkLogin, async (req, res) => {
+  router.get('/todays/booked', checkLogin, async (req, res) => {
     try {
-      const result = await roomService.getTodayBookings(req.user.hotel);
+      const result = await roomService.getTodayBooked(req.user.hotel);
 
       return successRes({res, data: result});
     } catch (e) {
       return errorRes({res, message: 'Server side error!'});
     }
   });
-  // delete room
+  // update room info
+  router.put('/:roomId', checkLogin, async (req, res) => {
+    try {
+      const error = await roomValidator.validateRoom(req);
+      if (error) {
+        return errorRes({
+          res,
+          message: error.message, statusCode: 403,
+        });
+      }
+      const result: any = await roomService.updateRoomInfo(req.body,
+        req.params.roomId);
+      if (result instanceof Error) {
+        return errorRes({res, message: result.message, statusCode: 404});
+      }
+      if (result != null) {
+        successRes({
+          res,
+          message: 'Room information update successfully!',
+          data: result,
+        });
+      }
+    } catch (e) {
+      Logger.info(e);
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
 
+  // delete room
   router.delete('/:roomId', checkLogin, async (req, res) => {
     try {
       const result = await roomService.deleteRoom(req.params.roomId);
