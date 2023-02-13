@@ -5,8 +5,9 @@ import checkLogin from '../common/checkLogin';
 import {errorRes, successRes} from '../common/response';
 import roomValidator from '../middlewares/validators/room';
 
+
 export default (app: Router) => {
-  const router = Router({mergeParams: true});
+  const router = Router();
   app.use('/rooms', router);
 
   const roomService = new RoomService();
@@ -72,6 +73,7 @@ export default (app: Router) => {
       return errorRes({res, message: 'Server side error!'});
     }
   });
+
   // update room info
   router.put('/:roomId', checkLogin, async (req, res) => {
     try {
@@ -82,8 +84,10 @@ export default (app: Router) => {
           message: error.message, statusCode: 403,
         });
       }
-      const result: any = await roomService.updateRoomInfo(req.body,
-        req.params.roomId);
+      const result: any = await roomService.updateRoomInfo(
+        req.body,
+        req.params.roomId,
+      );
       if (result instanceof Error) {
         return errorRes({res, message: result.message, statusCode: 404});
       }

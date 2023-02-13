@@ -7,8 +7,8 @@ import {errorRes, successRes} from '../common/response';
 export default (app: Router) => {
   const router = Router({mergeParams: true});
   app.use('/dashboard', router);
-  const dashboardService = new DashboardService();
 
+  const dashboardService = new DashboardService();
 
   router.get('/info', checkLogin, async (req, res) => {
     try {
