@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import Logger from '../../loaders/logger';
 import BookingService from '../../services/booking';
 import checkLogin from '../common/checkLogin';
 import {errorRes, successRes} from '../common/response';
@@ -39,6 +40,7 @@ export default (app: Router) => {
         statusCode: 201,
       });
     } catch (e) {
+      Logger.info(e);
       return errorRes({res, message: 'Internal server error!'});
     }
   });

@@ -64,7 +64,7 @@ export default (app: Router) => {
   });
 
   // get today bookings
-  router.get('/todays/booked', checkLogin, async (req, res) => {
+  router.get('/todays/bookings', checkLogin, async (req, res) => {
     try {
       const result = await roomService.getTodayBooked(req.user.hotel);
 

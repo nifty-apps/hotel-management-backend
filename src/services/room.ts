@@ -46,7 +46,7 @@ export default class RoomService {
     const bookings = await Booking.find({
       hotel: hotelId,
       checkIn: {$gte: start, $lt: end},
-    });
+    }).populate('room').sort({createdAt: 'desc'});
     return bookings;
   }
 
