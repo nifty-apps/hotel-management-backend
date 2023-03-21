@@ -5,8 +5,8 @@ export interface IUser {
   email: string,
   password: string,
   role: string,
-  phone: string,
-  address: string,
+  phone?: string,
+  address?: string,
   hotel: Schema.Types.ObjectId
 }
 const schema = new Schema<IUser>({
@@ -33,9 +33,11 @@ const schema = new Schema<IUser>({
   phone: {
     type: String,
     trim: true,
+    default: null,
   },
   address: {
     type: String,
+    default: null,
   },
   hotel: {
     type: Schema.Types.ObjectId,
