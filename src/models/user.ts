@@ -3,23 +3,18 @@ import {model, Schema} from 'mongoose';
 export interface IUser {
   name: string,
   email: string,
-  phone: string,
   password: string,
   role: string,
+  phone: string,
+  address: string,
   hotel: Schema.Types.ObjectId
 }
 const schema = new Schema<IUser>({
   name: {
     type: String,
-    trim: true,
     required: true,
   },
   email: {
-    type: String,
-    trim: true,
-    required: true,
-  },
-  phone: {
     type: String,
     trim: true,
     required: true,
@@ -34,6 +29,13 @@ const schema = new Schema<IUser>({
     type: String,
     trim: true,
     required: true,
+  },
+  phone: {
+    type: String,
+    trim: true,
+  },
+  address: {
+    type: String,
   },
   hotel: {
     type: Schema.Types.ObjectId,
