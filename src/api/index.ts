@@ -4,6 +4,7 @@ import bookingRoutes from './routes/booking';
 import dashboardRoutes from './routes/dashboard';
 import hotelRoutes from './routes/hotel';
 import roomRoutes from './routes/room';
+import userRoutes from './routes/user';
 
 export default () => {
   const app = Router();
@@ -12,5 +13,6 @@ export default () => {
   roomRoutes(app);
   dashboardRoutes(app);
   bookingRoutes(app);
+  userRoutes(app);
   return app;
 };
