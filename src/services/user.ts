@@ -34,6 +34,10 @@ export default class UserService {
   // update user
   async updateUser(userId: any, userData: IUser) {
     try {
+      if (userData.password) {
+        const hashPassword = await bcrypt.hash(userData.password, 10);
+        userData.password = hashPassword;
+      }
       const user = await User.findByIdAndUpdate(userId,
         {$set: userData},
         {new: true});

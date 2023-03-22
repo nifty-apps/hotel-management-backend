@@ -22,6 +22,7 @@ export default (app: Router) => {
       return successRes({
         res, message: 'The user has been added successfully!',
         data: result,
+        statusCode: 201,
       });
     } catch (error) {
 
@@ -36,7 +37,7 @@ export default (app: Router) => {
           message: 'Server side error !',
         });
       }
-      return res.status(200).json(result);
+      return successRes({res, data: result, statusCode: 200});
     } catch (error) {
       return res.status(400).json({
         message: 'Server side error !',
