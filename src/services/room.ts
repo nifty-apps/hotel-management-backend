@@ -8,11 +8,10 @@ export default class RoomService {
       Logger.info(roomData.hotel);
       const room = await Room.findOne(
         {
-          hotel: roomData.hotel,
-          floor: roomData.floor,
           number: roomData.number,
+          hotel: roomData.hotel,
+          roomType: roomData.roomType,
         });
-      Logger.info(room);
       if (room) {
         return {
           message: 'The room will not be duplicated!',
@@ -26,9 +25,29 @@ export default class RoomService {
     }
   }
 
-  async getTotalRooms(hotelId: ObjectId) {
-    const rooms = await Room.find({hotel: hotelId});
+  async getTotalRooms(hotelId: ObjectId, roomNumber?: string) {
+    const filter: {hotel: ObjectId, number?: string} = {hotel: hotelId};
+    if (roomNumber) {
+      filter['number'] = roomNumber;
+    }
+
+    const rooms = await Room.find(filter)
+      .populate({
+        path: 'roomType',
+        select: '-hotel -createdAt -updatedAt -__v',
+      }).select('-__v');
+
     return rooms;
+  }
+
+  async updateRoomInfo(roomData: IRoom, roomId: any) {
+    const room = await Room.findByIdAndUpdate(roomId,
+      {$set: roomData},
+      {new: true});
+    if (room == null) {
+      return Error('Room not found!');
+    }
+    return room;
   }
 
   async getRecentBookings(hotelId: Object) {
@@ -50,15 +69,6 @@ export default class RoomService {
     return bookings;
   }
 
-  async updateRoomInfo(roomData: IRoom, roomId: any) {
-    const room = await Room.findByIdAndUpdate(roomId,
-      {$set: roomData},
-      {new: true});
-    if (room == null) {
-      return Error('The room is not found!');
-    }
-    return room;
-  }
 
   async deleteRoom(roomId: any) {
     const room = await Room.findByIdAndDelete(roomId);

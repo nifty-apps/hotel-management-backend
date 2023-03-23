@@ -25,6 +25,7 @@ export default (app: Router) => {
       const result: any = await roomService.addRoom({
         ...req.body,
         hotel: req.user.hotel,
+        roomType: req.body.roomType,
       });
       if (result instanceof Error) {
         return errorRes({res, message: result.message});
@@ -44,9 +45,11 @@ export default (app: Router) => {
   });
 
   // get total rooms
-  router.get('/', checkLogin, async (req, res) => {
+  router.get('/:roomNumber?', checkLogin, async (req, res) => {
     try {
-      const result = await roomService.getTotalRooms(req.user.hotel);
+      const roomNumber: string = req.query.roomNumber as string;
+      const result = await roomService.getTotalRooms(
+        req.user.hotel, roomNumber);
       return successRes({res, data: result});
     } catch (e) {
       return errorRes({res, message: 'Server side error!'});
