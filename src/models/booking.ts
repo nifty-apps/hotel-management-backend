@@ -5,12 +5,11 @@ export interface IBooking {
   customer: {
     name: string;
     phone: string;
-    address: string;
   },
-  rent: number;
+  rooms: Schema.Types.ObjectId[];
   checkIn: Date;
   checkOut: Date;
-  room: Schema.Types.ObjectId;
+  status: string;
   hotel: Schema.Types.ObjectId;
 }
 
@@ -25,15 +24,11 @@ const schema = new Schema<IBooking>({
         type: String,
         required: true,
       },
-      address: {
-        type: String,
-        required: true,
-      },
     },
     required: true,
   },
-  rent: {
-    type: Number,
+  rooms: {
+    type: [{type: Schema.Types.ObjectId, ref: 'Room'}],
     required: true,
   },
   checkIn: {
@@ -44,9 +39,8 @@ const schema = new Schema<IBooking>({
     type: Date,
     required: true,
   },
-  room: {
-    type: Schema.Types.ObjectId,
-    ref: 'Room',
+  status: {
+    type: String,
     required: true,
   },
   hotel: {
