@@ -1,14 +1,14 @@
 import {model, Schema} from 'mongoose';
 
 export interface IRoomType {
-  room: string,
+  type: string,
   rent: number,
   description?: string,
   hotel: Schema.Types.ObjectId,
 }
 
 const schema = new Schema<IRoomType>({
-  room: {
+  type: {
     type: String,
     required: true,
   },

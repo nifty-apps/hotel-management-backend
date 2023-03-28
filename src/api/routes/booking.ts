@@ -32,6 +32,8 @@ export default (app: Router) => {
       return errorRes({res, message: 'Internal server error!'});
     }
   });
+
+
   router.put('/:bookingId', checkLogin, async (req, res) => {
     try {
       const result = await bookingService.updateBookingInfo(

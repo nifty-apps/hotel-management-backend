@@ -69,6 +69,90 @@ export default class RoomService {
     return bookings;
   }
 
+  async getAvailableRooms(fromDate: any, toDate: any, hotelId: any) {
+    try {
+      const bookedRooms = await Booking.aggregate([
+        {
+          $match: {
+            hotel: hotelId,
+            checkIn: {$lt: new Date(toDate)},
+            checkOut: {$gt: new Date(fromDate)},
+          },
+        },
+        {
+          $unwind: '$rooms',
+        },
+        {
+          $group: {
+            _id: null,
+            bookedRooms: {$addToSet: '$rooms'},
+          },
+        },
+      ]);
+
+      const bookedRoomIds = bookedRooms.length > 0 ?
+        bookedRooms[0].bookedRooms : [];
+
+      const availableRooms = await Room.aggregate([
+        {
+          $match: {
+            hotel: hotelId,
+            _id: {$nin: bookedRoomIds},
+          },
+        },
+        {
+          $lookup: {
+            from: 'roomtypes',
+            localField: 'roomType',
+            foreignField: '_id',
+            as: 'roomType',
+          },
+        },
+        {
+          $unwind: '$roomType',
+        },
+        // {
+        //   $project:
+        //   {
+        //     'hotel': 0,
+        //     'createdAt': 0,
+        //     'updatedAt': 0,
+        //     '__v': 0,
+        //     'roomType.hotel': 0,
+        //     'roomType.createdAt': 0,
+        //     'roomType.updatedAt': 0,
+        //     'roomType.__v': 0,
+        //   },
+        // },
+        {
+          $group: {
+            _id: '$roomType.type',
+            count: {$sum: 1},
+            rooms: {$push: '$$ROOT'},
+          },
+        },
+        {
+          $addFields: {
+            'rooms.rent': {$first: '$rooms.roomType.rent'},
+          },
+        },
+        {
+          $project: {
+            '_id': 0,
+            'type': '$_id',
+            'count': 1,
+            'rooms._id': 1,
+            'rooms.number': 1,
+            'rooms.rent': 1,
+          },
+        },
+      ]);
+
+      return availableRooms;
+    } catch (error) {
+      return error as Error;
+    }
+  }
 
   async deleteRoom(roomId: any) {
     const room = await Room.findByIdAndDelete(roomId);

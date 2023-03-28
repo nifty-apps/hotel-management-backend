@@ -44,6 +44,18 @@ export default (app: Router) => {
     }
   });
 
+  // get available rooms
+  router.get('/available', checkLogin, async (req, res) => {
+    try {
+      const fromDate = req.query.fromDate as string;
+      const toDate = req.query.toDate as string;
+      const result = await roomService.getAvailableRooms(
+        fromDate, toDate, req.user.hotel);
+      return successRes({res, data: result});
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
   // get total rooms
   router.get('/:roomNumber?', checkLogin, async (req, res) => {
     try {
