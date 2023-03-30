@@ -1,12 +1,13 @@
 import {Router} from 'express';
+
 import authRoutes from './routes/auth';
 import bookingRoutes from './routes/booking';
 import dashboardRoutes from './routes/dashboard';
 import hotelRoutes from './routes/hotel';
 import roomRoutes from './routes/room';
 import roomTypeRoutes from './routes/room_type';
+import transactionRoutes from './routes/transaction';
 import userRoutes from './routes/user';
-
 export default () => {
   const app = Router();
   authRoutes(app);
@@ -16,5 +17,6 @@ export default () => {
   bookingRoutes(app);
   userRoutes(app);
   roomTypeRoutes(app);
+  transactionRoutes(app);
   return app;
 };
