@@ -32,8 +32,32 @@ export default (app: Router) => {
       return errorRes({res, message: 'Internal server error!'});
     }
   });
-
-
+  // get recent booked rooms
+  router.get('/recent', checkLogin, async (req, res) => {
+    try {
+      const result = await bookingService.getRecentBookings(req.user.hotel);
+      return successRes({res, data: result});
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
+  // get checkin list
+  router.get('/checkin', checkLogin, async (req, res) => {
+    try {
+      const checkInDate = req.query.checkInDate as string;
+      const checkOutDate = req.query.checkOutDate as string;
+      const status = req.query.status as string;
+      const result = await bookingService.getBookingsList(
+        req.user.hotel,
+        checkInDate,
+        checkOutDate,
+        status,
+      );
+      return successRes({res, data: result});
+    } catch (error) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
   router.put('/:bookingId', checkLogin, async (req, res) => {
     try {
       const result = await bookingService.updateBookingInfo(

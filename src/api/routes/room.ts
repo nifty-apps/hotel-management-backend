@@ -68,15 +68,6 @@ export default (app: Router) => {
     }
   });
 
-  // get recent booked rooms
-  router.get('/recent/bookings', checkLogin, async (req, res) => {
-    try {
-      const result = await roomService.getRecentBookings(req.user.hotel);
-      return successRes({res, data: result});
-    } catch (e) {
-      return errorRes({res, message: 'Server side error!'});
-    }
-  });
 
   // get today bookings
   router.get('/todays/bookings', checkLogin, async (req, res) => {

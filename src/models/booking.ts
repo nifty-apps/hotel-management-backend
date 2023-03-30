@@ -10,6 +10,8 @@ export interface IBooking {
   checkIn: Date;
   checkOut: Date;
   status: string;
+  total: number;
+  discount: number;
   hotel: Schema.Types.ObjectId;
 }
 
@@ -41,6 +43,14 @@ const schema = new Schema<IBooking>({
   },
   status: {
     type: String,
+    required: true,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+  discount: {
+    type: Number,
     required: true,
   },
   hotel: {

@@ -50,13 +50,6 @@ export default class RoomService {
     return room;
   }
 
-  async getRecentBookings(hotelId: Object) {
-    const bookings = await Booking.find({hotel: hotelId})
-      .populate('room')
-      .sort({createdAt: 'desc'})
-      .limit(30);
-    return bookings;
-  }
   async getTodayBooked(hotelId: Object) {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
