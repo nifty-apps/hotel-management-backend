@@ -32,6 +32,26 @@ export default (app: Router) => {
       return errorRes({res, message: 'Internal server error!'});
     }
   });
+  // get bookings details
+  router.get('/details/:bookingId', checkLogin, async (req, res) => {
+    try {
+      const result = await bookingService.getBookingInfo(req.params.bookingId);
+      if (result instanceof Error) {
+        return errorRes({
+          res, message: result.message,
+          statusCode: 400,
+        });
+      }
+      return successRes({
+        res, message: 'The booking information has been updated!',
+        statusCode: 200,
+        data: result,
+      });
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
+
   // get recent booked rooms
   router.get('/recent', checkLogin, async (req, res) => {
     try {

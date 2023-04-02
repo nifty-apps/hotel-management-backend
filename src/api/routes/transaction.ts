@@ -22,4 +22,17 @@ export default (app: Router) => {
       return errorRes({res, message: 'Server side error!'});
     }
   });
+  // get transaction list
+  router.get('/:bookingId', checkLogin, async (req, res) => {
+    try {
+      const result = await transactionService.
+        getTransactionList(req.params.bookingId);
+      if (result instanceof Error) {
+        return errorRes({res, message: 'Server side error!'});
+      }
+      return successRes({res, data: result});
+    } catch (error) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
 };

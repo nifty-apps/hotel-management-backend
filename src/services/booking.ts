@@ -10,6 +10,24 @@ export default class BookingService {
     }
   }
 
+  async getBookingInfo(bookingId: any) {
+    try {
+      const booking = await Booking.findById(bookingId)
+        .populate({
+          path: 'rooms',
+          select: 'number roomType',
+          populate: {path: 'roomType', select: 'type rent'},
+        }).select('-createdAt -updatedAt -__v');
+      if (booking == null) {
+        return Error('Booking not found!');
+      } else {
+        return booking;
+      }
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
   async updateBookingInfo(bookingInfo: IBooking, bookingId: any) {
     try {
       const booking = await Booking.

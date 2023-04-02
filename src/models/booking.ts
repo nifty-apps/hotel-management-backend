@@ -1,5 +1,5 @@
 
-import {Date, model, Schema} from 'mongoose';
+import {model, Schema} from 'mongoose';
 
 export interface IBooking {
   customer: {
