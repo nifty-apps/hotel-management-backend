@@ -25,6 +25,7 @@ export default (app: Router) => {
       }
       return successRes({
         res, message: 'The room has been successfully booked!',
+        data: {_id: result},
         statusCode: 201,
       });
     } catch (e) {
@@ -42,11 +43,9 @@ export default (app: Router) => {
           statusCode: 400,
         });
       }
-      return successRes({
-        res, message: 'The booking information has been updated!',
-        statusCode: 200,
-        data: result,
-      });
+      if (result != null) {
+        return successRes({res, data: result});
+      }
     } catch (e) {
       return errorRes({res, message: 'Server side error!'});
     }

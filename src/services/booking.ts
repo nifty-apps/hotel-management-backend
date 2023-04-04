@@ -4,7 +4,7 @@ export default class BookingService {
   async bookRoom(bookingInfo: IBooking) {
     try {
       const booking = await Booking.create(bookingInfo);
-      return booking;
+      return booking._id;
     } catch (e) {
       return e as Error;
     }
@@ -28,6 +28,7 @@ export default class BookingService {
     }
   }
 
+
   async updateBookingInfo(bookingInfo: IBooking, bookingId: any) {
     try {
       const booking = await Booking.
@@ -43,7 +44,7 @@ export default class BookingService {
 
   async getRecentBookings(hotelId: Object) {
     const bookings = await Booking.find({hotel: hotelId})
-      .select('_id customer.name customer.phone')
+      .select('_id paymentStatus customer.name customer.phone')
       .sort({createdAt: 'desc'})
       .limit(30);
     return bookings;
@@ -55,7 +56,8 @@ export default class BookingService {
       status: status,
       checkIn: {$gte: new Date(checkinDate), $lte: new Date(checkoutDate)},
       checkOut: {$gte: new Date(checkinDate), $lte: new Date(checkoutDate)},
-    }).select('_id customer.name customer.phone').sort({createdAt: 'desc'});
+    }).select('_id paymentStatus customer.name customer.phone')
+      .sort({createdAt: 'desc'});
     return bookings;
   }
 }

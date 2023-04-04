@@ -104,19 +104,20 @@ export default class RoomService {
         {
           $unwind: '$roomType',
         },
-        // {
-        //   $project:
-        //   {
-        //     'hotel': 0,
-        //     'createdAt': 0,
-        //     'updatedAt': 0,
-        //     '__v': 0,
-        //     'roomType.hotel': 0,
-        //     'roomType.createdAt': 0,
-        //     'roomType.updatedAt': 0,
-        //     'roomType.__v': 0,
-        //   },
-        // },
+        {
+          $project:
+          {
+            'hotel': 0,
+            'createdAt': 0,
+            'updatedAt': 0,
+            '__v': 0,
+            'roomType.hotel': 0,
+            'roomType.description': 0,
+            'roomType.createdAt': 0,
+            'roomType.updatedAt': 0,
+            'roomType.__v': 0,
+          },
+        },
         {
           $group: {
             _id: '$roomType.type',
@@ -124,11 +125,12 @@ export default class RoomService {
             rooms: {$push: '$$ROOT'},
           },
         },
-        {
-          $addFields: {
-            'rooms.rent': {$first: '$rooms.roomType.rent'},
-          },
-        },
+        // {
+        //   $addFields: {
+        //     'rooms.rent': {$first: '$rooms.roomType.rent'},
+        //     'rooms.type': {$first: '$rooms.roomType.type'},
+        //   },
+        // },
         {
           $project: {
             '_id': 0,
@@ -136,7 +138,9 @@ export default class RoomService {
             'count': 1,
             'rooms._id': 1,
             'rooms.number': 1,
-            'rooms.rent': 1,
+            'rooms.roomType._id': 1,
+            'rooms.roomType.rent': 1,
+            'rooms.roomType.type': 1,
           },
         },
       ]);

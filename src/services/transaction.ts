@@ -9,14 +9,18 @@ export default class TransactionService {
       return e as Error;
     }
   }
-  async getTransactionList(bookingId: any) {
+  async getTransactionList(hotelId: any, bookingId?: any) {
     try {
-      const transactions = await Transaction.
-        find({booking: bookingId})
-        .select('-__v -updatedAt -createdAt -hotel -booking');
+      const filter: {hotel: any, number?: any}
+      & {booking?: any} = {hotel: hotelId};
+      if (bookingId) {
+        filter['booking'] = bookingId;
+      }
+      const transactions = await Transaction.find(filter).
+        select('-__v -hotel -booking -createdAt -updatedAt');
       return transactions;
-    } catch (error) {
-      return error as Error;
+    } catch (e) {
+      return e as Error;
     }
   }
 }
