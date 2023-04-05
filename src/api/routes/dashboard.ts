@@ -13,8 +13,9 @@ export default (app: Router) => {
   router.get('/info', checkLogin, async (req, res) => {
     try {
       const result =
-        await dashboardService.getDashboardInfo(req.user.hotel);
+        await dashboardService.getDailyReport(
 
+          req.user.hotel);
       if (result instanceof Error) {
         return errorRes({res, message: result.message});
       }
