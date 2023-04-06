@@ -1,3 +1,4 @@
+import {ObjectId} from 'mongoose';
 import Booking, {IBooking} from '../models/booking';
 
 export default class BookingService {
@@ -60,6 +61,14 @@ export default class BookingService {
       .sort({createdAt: 'desc'});
     return bookings;
   }
+  async getCustomerList(hotelId: ObjectId, customerPhone?: string) {
+    const filter: any = {hotel: hotelId};
+    if (customerPhone) {
+      filter['customer.phone'] = customerPhone;
+    }
+    const customers = await Booking.find(filter)
+      .select('customer.name customer.phone');
+    return customers;
+  }
 }
-
 
