@@ -9,15 +9,27 @@ export default class TransactionService {
       return e as Error;
     }
   }
-  async getTransactionList(hotelId: any, bookingId?: any) {
+  async getTransactionList(hotelId: any, bookingId?: any,
+    fromDate?: string, toDate?: string) {
     try {
-      const filter: {hotel: any, number?: any}
-      & {booking?: any} = {hotel: hotelId};
+      const filter: any = {hotel: hotelId};
       if (bookingId) {
         filter['booking'] = bookingId;
       }
-      const transactions = await Transaction.find(filter).
-        select('-__v -hotel -booking -createdAt -updatedAt');
+      if (fromDate && toDate) {
+        const fromDateObj = new Date(fromDate);
+        const toDateObj = new Date(toDate);
+        if (isNaN(fromDateObj.getTime()) || isNaN(toDateObj.getTime())) {
+          throw new Error('Invalid date format');
+        }
+        filter['createdAt'] = {
+          $gte: fromDateObj,
+          $lte: toDateObj,
+        };
+      }
+      const transactions = await Transaction.find(filter)
+        .populate({path: 'booking', select: 'customer.name customer.phone'}).
+        select('_id amount paymentMethod ');
       return transactions;
     } catch (e) {
       return e as Error;

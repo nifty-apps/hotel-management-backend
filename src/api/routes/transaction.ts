@@ -29,10 +29,15 @@ export default (app: Router) => {
   // get transaction list
   router.get('/:bookingId?', checkLogin, async (req, res) => {
     try {
+      const fromDate = req.query.fromDate as string;
+      const toDate = req.query.toDate as string;
       const result = await transactionService.
         getTransactionList(
           req.user.hotel,
-          req.query.bookingId);
+          req.query.bookingId,
+          fromDate,
+          toDate,
+        );
       if (result instanceof Error) {
         return errorRes({res, message: 'Server side error!'});
       }
