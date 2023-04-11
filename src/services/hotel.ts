@@ -19,7 +19,8 @@ export default class HotelService {
   }
   async updateHotelInfo(hotelId: ObjectId, hotelData: IHotel) {
     try {
-      const hotel = await Hotel.findByIdAndUpdate({_id: hotelId}, hotelData);
+      const hotel = await Hotel.findByIdAndUpdate({_id: hotelId},
+        hotelData, {new: true});
       if (hotel != null) {
         return hotel;
       }
