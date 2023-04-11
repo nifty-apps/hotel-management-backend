@@ -1,3 +1,4 @@
+import {ObjectId} from 'mongoose';
 import User from '../models//user';
 import Hotel, {IHotel} from '../models/hotel';
 export default class HotelService {
@@ -12,6 +13,17 @@ export default class HotelService {
         });
       }
       return hotel;
+    } catch (error) {
+      return error as Error;
+    }
+  }
+  async updateHotelInfo(hotelId: ObjectId, hotelData: IHotel) {
+    try {
+      const hotel = await Hotel.findByIdAndUpdate({_id: hotelId}, hotelData);
+      if (hotel != null) {
+        return hotel;
+      }
+      return new Error('Hotel not found');
     } catch (error) {
       return error as Error;
     }
