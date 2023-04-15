@@ -61,13 +61,29 @@ export default class BookingService {
       .sort({createdAt: 'desc'});
     return bookings;
   }
-  async getCustomerList(hotelId: ObjectId, customerPhone?: string) {
+  async getCustomerList(hotelId: ObjectId,
+    customerPhone?: string, bookingStatus?: string) {
     const filter: any = {hotel: hotelId};
     if (customerPhone) {
       filter['customer.phone'] = customerPhone;
     }
     const customers = await Booking.find(filter)
       .select('customer.name customer.phone');
+    return customers;
+  }
+  async getBookingCustomerList(hotelId: ObjectId, customerPhone?: string) {
+    const filter: any = {
+      hotel: hotelId,
+      status: {$in: ['booked', 'checkedIn']},
+    };
+
+    if (customerPhone) {
+      filter['customer.phone'] = customerPhone;
+    }
+
+    const customers = await Booking.find(filter)
+      .select('_id customer.name customer.phone');
+
     return customers;
   }
 }

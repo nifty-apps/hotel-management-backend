@@ -86,6 +86,18 @@ export default (app: Router) => {
       return errorRes({res, message: 'Server side error!'});
     }
   });
+  router.get('/customer/list', checkLogin, async (req, res) => {
+    try {
+      const result = await bookingService.getBookingCustomerList(
+        req.user.hotel,
+        req.query.customerPhone as string,
+      );
+      return successRes({res, data: result});
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    };
+  });
+
   router.put('/:bookingId', checkLogin, async (req, res) => {
     try {
       const result = await bookingService.updateBookingInfo(

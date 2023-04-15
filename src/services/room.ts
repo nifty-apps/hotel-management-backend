@@ -151,6 +151,112 @@ export default class RoomService {
     }
   }
 
+  async checkRoomIsAvailable(checkoutDate: any, extendsCheckoutDate: any,
+    hotelId: any, roomIds: any[]) {
+    try {
+      const bookedRooms = await Booking.aggregate([
+        {
+          $match: {
+            hotel: hotelId,
+            checkIn: {$lt: new Date(extendsCheckoutDate)},
+            checkOut: {$gt: new Date(checkoutDate)},
+          },
+        },
+        {
+          $unwind: '$rooms',
+        },
+        {
+          $group: {
+            _id: null,
+            bookedRooms: {$addToSet: '$rooms'},
+          },
+        },
+      ]);
+
+      const bookedRoomIds = bookedRooms.length > 0 ?
+        bookedRooms[0].bookedRooms : [];
+
+      const availableRooms = await Room.aggregate([
+        {
+          $match: {
+            hotel: hotelId,
+            _id: {$nin: bookedRoomIds},
+          },
+        },
+        {
+          $lookup: {
+            from: 'roomtypes',
+            localField: 'roomType',
+            foreignField: '_id',
+            as: 'roomType',
+          },
+        },
+        {
+          $unwind: '$roomType',
+        },
+        {
+          $project: {
+            'hotel': 0,
+            'createdAt': 0,
+            'updatedAt': 0,
+            '__v': 0,
+            'roomType.hotel': 0,
+            'roomType.description': 0,
+            'roomType.createdAt': 0,
+            'roomType.updatedAt': 0,
+            'roomType.__v': 0,
+          },
+        },
+        {
+          $group: {
+            _id: '$roomType.type',
+            count: {$sum: 1},
+            rooms: {$push: '$$ROOT'},
+          },
+        },
+        {
+          $project: {
+            '_id': 0,
+            'type': '$_id',
+            'count': 1,
+            'rooms._id': 1,
+            'rooms.number': 1,
+            'rooms.roomType._id': 1,
+            'rooms.roomType.rent': 1,
+            'rooms.roomType.type': 1,
+          },
+        },
+      ]);
+      // Parse the roomIds string into an array
+      const parsedRoomIds = roomIds[0].slice(1, -1)
+        .split(',').map((id: any) => id.trim());
+
+      // Check if all roomIds are available
+      const allRoomsAvailable = parsedRoomIds.every((id: any) =>
+        availableRooms.some((group) =>
+          group.rooms.some((room: any) => room._id.toString() === id),
+        ),
+      );
+      if (allRoomsAvailable) {
+        // Find the room details for all roomIds
+        const selectedRooms = parsedRoomIds.map((id: any) =>
+          availableRooms
+            .flatMap((group) => group.rooms)
+            .find((room) => room._id.toString() === id),
+        );
+        return selectedRooms;
+      } else {
+        return {
+          message: 'One or more rooms are not available.',
+          statusCode: 404,
+        };
+      }
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
+
   async deleteRoom(roomId: any) {
     const room = await Room.findByIdAndDelete(roomId);
     if (room == null) {

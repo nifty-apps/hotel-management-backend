@@ -26,6 +26,27 @@ export default (app: Router) => {
       return errorRes({res, message: 'Server side error!'});
     }
   });
+  // get transaction list by time range
+  router.get('/history', checkLogin, async (req, res) => {
+    try {
+      const timeRange = req.query.timeRange;
+
+      if (!timeRange) {
+        return errorRes({res, message: 'Time range is required!'});
+      }
+      const result = await transactionService.
+        getTransactionHistory(
+          req.user.hotel,
+          timeRange as string,
+        );
+      if (result instanceof Error) {
+        return errorRes({res, message: 'Server side error!'});
+      }
+      return successRes({res, data: result});
+    } catch (error) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
   // get transaction list
   router.get('/:bookingId?', checkLogin, async (req, res) => {
     try {
