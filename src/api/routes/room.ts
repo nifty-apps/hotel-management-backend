@@ -61,20 +61,22 @@ export default (app: Router) => {
     try {
       const checkoutDate = req.query.checkoutDate as string;
       const extendsCheckoutDate = req.query.extendsCheckoutDate as string;
-      const roomIds = (req.query.roomIds as string).split(',');
       const result = await roomService.checkRoomIsAvailable(
         checkoutDate,
         extendsCheckoutDate,
         req.user.hotel,
-        roomIds,
+        req.query.roomIds as string[],
       );
-      if (result.statusCode != null) {
+      if (Array.isArray(result)) {
+        return successRes({res, data: result});
+      } else if (result instanceof Error) {
+        return errorRes({res, message: 'Server side error!'});
+      } else {
         return errorRes({
           res, message: result.message,
           statusCode: result.statusCode,
         });
       }
-      return successRes({res, data: result});
     } catch (e) {
       return errorRes({res, message: 'Server side error!'});
     }
