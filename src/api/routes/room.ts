@@ -56,6 +56,32 @@ export default (app: Router) => {
       return errorRes({res, message: 'Server side error!'});
     }
   });
+  // get available room check
+  router.get('/available/check', checkLogin, async (req, res) => {
+    try {
+      const checkoutDate = req.query.checkoutDate as string;
+      const extendsCheckoutDate = req.query.extendsCheckoutDate as string;
+      const result = await roomService.checkRoomIsAvailable(
+        checkoutDate,
+        extendsCheckoutDate,
+        req.user.hotel,
+        req.query.roomIds as string[],
+      );
+      if (Array.isArray(result)) {
+        return successRes({res, data: result});
+      } else if (result instanceof Error) {
+        return errorRes({res, message: 'Server side error!'});
+      } else {
+        return errorRes({
+          res, message: result.message,
+          statusCode: result.statusCode,
+        });
+      }
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
+
   // get total rooms
   router.get('/:roomNumber?', checkLogin, async (req, res) => {
     try {

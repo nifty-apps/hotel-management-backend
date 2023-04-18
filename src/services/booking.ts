@@ -1,10 +1,11 @@
+import {ObjectId} from 'mongoose';
 import Booking, {IBooking} from '../models/booking';
 
 export default class BookingService {
   async bookRoom(bookingInfo: IBooking) {
     try {
       const booking = await Booking.create(bookingInfo);
-      return booking;
+      return booking._id;
     } catch (e) {
       return e as Error;
     }
@@ -28,6 +29,7 @@ export default class BookingService {
     }
   }
 
+
   async updateBookingInfo(bookingInfo: IBooking, bookingId: any) {
     try {
       const booking = await Booking.
@@ -43,7 +45,7 @@ export default class BookingService {
 
   async getRecentBookings(hotelId: Object) {
     const bookings = await Booking.find({hotel: hotelId})
-      .select('_id customer.name customer.phone')
+      .select('_id paymentStatus customer.name customer.phone')
       .sort({createdAt: 'desc'})
       .limit(30);
     return bookings;
@@ -55,9 +57,34 @@ export default class BookingService {
       status: status,
       checkIn: {$gte: new Date(checkinDate), $lte: new Date(checkoutDate)},
       checkOut: {$gte: new Date(checkinDate), $lte: new Date(checkoutDate)},
-    }).select('_id customer.name customer.phone').sort({createdAt: 'desc'});
+    }).select('_id paymentStatus customer.name customer.phone')
+      .sort({createdAt: 'desc'});
     return bookings;
   }
-}
+  async getCustomerList(hotelId: ObjectId,
+    customerPhone?: string, bookingStatus?: string) {
+    const filter: any = {hotel: hotelId};
+    if (customerPhone) {
+      filter['customer.phone'] = customerPhone;
+    }
+    const customers = await Booking.find(filter)
+      .select('customer.name customer.phone');
+    return customers;
+  }
+  async getBookingCustomerList(hotelId: ObjectId, customerPhone?: string) {
+    const filter: any = {
+      hotel: hotelId,
+      status: {$in: ['booked', 'checkedIn']},
+    };
 
+    if (customerPhone) {
+      filter['customer.phone'] = customerPhone;
+    }
+
+    const customers = await Booking.find(filter)
+      .select('_id customer.name customer.phone');
+
+    return customers;
+  }
+}
 

@@ -14,6 +14,7 @@ const schema = new Schema<ITransaction>({
   },
   paymentMethod: {
     type: String,
+    enum: ['cash'],
     required: true,
   },
   booking: {
