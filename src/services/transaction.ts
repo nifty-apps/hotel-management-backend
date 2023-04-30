@@ -97,7 +97,7 @@ export default class TransactionService {
                 amount: '$$transaction.amount',
                 paymentMethod: '$$transaction.paymentMethod',
                 booking: '$$transaction.booking',
-                // Exclude the fields by not including them in the output
+                createdAt: '$$transaction.createdAt',
               },
             },
           },
