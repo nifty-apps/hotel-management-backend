@@ -1,5 +1,9 @@
 
 import bcrypt from 'bcrypt';
+import Hotel from '../models/hotel';
+import Room from '../models/room';
+import RoomType from '../models/room_type';
+import Transaction from '../models/transaction';
 import User, {IUser} from '../models/user';
 export default class UserService {
   // add user
@@ -52,7 +56,16 @@ export default class UserService {
   // delete user
   async deleteUser(userId: any) {
     try {
-      const user = await User.findByIdAndDelete(userId);
+      const user = await User.findById(userId);
+      if (user?.role !== 'Owner') {
+        await User.findByIdAndDelete(userId);
+      } else {
+        await User.findByIdAndDelete(userId);
+        await Hotel.findByIdAndDelete(user?.hotel);
+        await Room.deleteMany({hotel: user?.hotel});
+        await RoomType.deleteMany({hotel: user?.hotel});
+        await Transaction.deleteMany({hotel: user?.hotel});
+      }
       if (user == null) {
         return Error('The user could not be found');
       }
