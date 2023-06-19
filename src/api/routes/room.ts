@@ -44,6 +44,7 @@ export default (app: Router) => {
     }
   });
 
+
   // get available rooms
   router.get('/available', checkLogin, async (req, res) => {
     try {
@@ -106,6 +107,15 @@ export default (app: Router) => {
     }
   });
 
+  // get rooms report
+  router.get('/bookings/report', checkLogin, async (req, res) => {
+    try {
+      const result = await roomService.getRoomsReport(req.user.hotel);
+      return successRes({res, data: result});
+    } catch (e) {
+      return errorRes({res, message: 'Server side error!'});
+    }
+  });
   // update room info
   router.put('/:roomId', checkLogin, async (req, res) => {
     try {
