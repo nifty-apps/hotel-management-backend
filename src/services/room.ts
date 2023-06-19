@@ -1,4 +1,5 @@
-import {ObjectId} from 'mongoose';
+import moment from 'moment';
+import mongoose, {ObjectId} from 'mongoose';
 import Logger from '../loaders/logger';
 import Booking from '../models/booking';
 import Room, {IRoom} from '../models/room';
@@ -151,111 +152,7 @@ export default class RoomService {
     }
   }
 
-  // async checkRoomIsAvailable(checkoutDate: any, extendsCheckoutDate: any,
-  //   hotelId: any, roomIds: string[]) {
-  //   try {
-  //     console.log(roomIds);
-  //     const bookedRooms = await Booking.aggregate([
-  //       {
-  //         $match: {
-  //           hotel: hotelId,
-  //           checkIn: {$lt: new Date(extendsCheckoutDate)},
-  //           checkOut: {$gt: new Date(checkoutDate)},
-  //         },
-  //       },
-  //       {
-  //         $unwind: '$rooms',
-  //       },
-  //       {
-  //         $group: {
-  //           _id: null,
-  //           bookedRooms: {$addToSet: '$rooms'},
-  //         },
-  //       },
-  //     ]);
 
-  //     const bookedRoomIds = bookedRooms.length > 0 ?
-  //       bookedRooms[0].bookedRooms : [];
-
-  //     const availableRooms = await Room.aggregate([
-  //       {
-  //         $match: {
-  //           hotel: hotelId,
-  //           _id: {$nin: bookedRoomIds},
-  //         },
-  //       },
-  //       {
-  //         $lookup: {
-  //           from: 'roomtypes',
-  //           localField: 'roomType',
-  //           foreignField: '_id',
-  //           as: 'roomType',
-  //         },
-  //       },
-  //       {
-  //         $unwind: '$roomType',
-  //       },
-  //       {
-  //         $project: {
-  //           'hotel': 0,
-  //           'createdAt': 0,
-  //           'updatedAt': 0,
-  //           '__v': 0,
-  //           'roomType.hotel': 0,
-  //           'roomType.description': 0,
-  //           'roomType.createdAt': 0,
-  //           'roomType.updatedAt': 0,
-  //           'roomType.__v': 0,
-  //         },
-  //       },
-  //       {
-  //         $group: {
-  //           _id: '$roomType.type',
-  //           count: {$sum: 1},
-  //           rooms: {$push: '$$ROOT'},
-  //         },
-  //       },
-  //       {
-  //         $project: {
-  //           '_id': 0,
-  //           'type': '$_id',
-  //           'count': 1,
-  //           'rooms._id': 1,
-  //           'rooms.number': 1,
-  //           'rooms.roomType._id': 1,
-  //           'rooms.roomType.rent': 1,
-  //           'rooms.roomType.type': 1,
-  //         },
-  //       },
-  //     ]);
-  //     // Parse the roomIds string into an array
-  //     const parsedRoomIds = roomIds[0].slice(1, -1)
-  //       .split(',').map((id: any) => id.trim());
-
-  //     // Check if all roomIds are available
-  //     const allRoomsAvailable = parsedRoomIds.every((id: any) =>
-  //       availableRooms.some((group) =>
-  //         group.rooms.some((room: any) => room._id.toString() === id),
-  //       ),
-  //     );
-  //     if (allRoomsAvailable) {
-  //       // Find the room details for all roomIds
-  //       const selectedRooms = parsedRoomIds.map((id: any) =>
-  //         availableRooms
-  //           .flatMap((group) => group.rooms)
-  //           .find((room) => room._id.toString() === id),
-  //       );
-  //       return selectedRooms;
-  //     } else {
-  //       return {
-  //         message: 'One or more rooms are not available.',
-  //         statusCode: 404,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     return error as Error;
-  //   }
-  // }
   async checkRoomIsAvailable(checkoutDate: any, extendsCheckoutDate: any,
     hotelId: any, roomIds: string[] | string) {
     try {
@@ -369,6 +266,61 @@ export default class RoomService {
     }
     return room;
   }
+
+  async getRoomsReport(hotelId: ObjectId) {
+    try {
+      const rooms = await Room.find({hotel: hotelId});
+      const report = [];
+
+      for (const room of rooms) {
+        const roomReport = {
+          roomNumber: room.number,
+          report: await this.generateRoomReport(room._id),
+        };
+
+        report.push(roomReport);
+      }
+
+      return report;
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
+  async generateRoomReport(roomId: any) {
+    const report = [];
+
+    for (let i = 0; i < 7; i++) {
+      const date = moment().add(i, 'days').format('DD-MM-YYYY');
+      const status = await this.getRoomStatus(roomId, date);
+      report.push({date, status});
+    }
+
+    return report;
+  }
+
+  async getRoomStatus(roomId: string, date: string) {
+    const startDate = moment(date, 'DD-MM-YYYY').startOf('day').toDate();
+    const endDate = moment(date, 'DD-MM-YYYY').endOf('day').toDate();
+
+    const bookings = await Booking.find({
+      rooms: {$elemMatch: {$eq: new mongoose.Types.ObjectId(roomId)}},
+      $or: [
+        {checkIn: {$lte: startDate}, checkOut: {$gte: startDate}},
+        {checkIn: {$gte: startDate, $lte: endDate}},
+        {checkOut: {$gte: startDate, $lte: endDate}},
+      ],
+    });
+
+    if (bookings.length > 0) {
+      const booking = bookings[0];
+      if (booking.status === 'booked') {
+        return 'booked';
+      } else if (booking.status === 'checkedIn') {
+        return 'checkedin';
+      }
+    }
+
+    return 'available';
+  }
 }
-
-
