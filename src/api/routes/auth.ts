@@ -7,6 +7,34 @@ const router = Router();
 export default (app: Router) => {
   app.use('/auth', router);
   const authService = new AuthService();
+  router.post('/send-otp', async (req, res) => {
+    try {
+      const result = await authService.sendOTP(req.body.email);
+      if (result instanceof Error) {
+        return errorRes({res, message: result.message});
+      }
+      if (result.message) {
+        return successRes({res, message: result.message, statusCode: 201});
+      }
+    } catch (error) {
+      return errorRes({res: res, message: 'Internal server error!'});
+    }
+  });
+
+  router.post('/verify-otp', async (req, res) => {
+    try {
+      const result = await authService.verifyOTP(req.body.email, req.body.otp);
+      if (result instanceof Error) {
+        return errorRes({res, message: result.message, statusCode: 401});
+      }
+      if (result.message) {
+        return successRes({res, message: result.message, statusCode: 201});
+      }
+    } catch (error) {
+      return errorRes({res: res, message: 'Internal server error!'});
+    }
+  });
+
 
   router.post('/registration', async (req, res) => {
     try {

@@ -1,9 +1,47 @@
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import nodeMailer from 'nodemailer';
 import config from '../config/';
+import OTP from '../models/otp';
 import User, {IUser} from '../models/user';
 export default class AuthService {
+  // Send OTP
+  async sendOTP(email: string) {
+    try {
+      await OTP.findOneAndDelete({email});
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      await OTP.create({email, otp});
+      const transporter = nodeMailer.createTransport({
+        host: config.smtpHost,
+        port: config.smtpPort,
+        auth: {
+          user: config.smtpUser,
+          pass: config.smtpPass,
+        },
+      });
+      await transporter.sendMail({
+        from: 'Booking Dei <raju@niftyitsolution.com>',
+        to: email,
+        subject: 'OTP for email verification',
+        text: `Your OTP for email verification is ${otp}`,
+      });
+      return {message: 'OTP sent successfully!'};
+    } catch (error) {
+      return error as Error;
+    }
+  }
+  // verify OTP
+  async verifyOTP(email: string, code: number) {
+    try {
+      const otp = await OTP.findOneAndDelete({'email': email, 'otp': code});
+      if (!otp) return {message: 'Invalid OTP!'};
+      return {message: 'OTP verified successfully!'};
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
   //  Register  User
   async registration(userData: IUser) {
     try {

@@ -7,4 +7,8 @@ export default {
   logLevel: process.env.LOG_LEVEL || 'silly',
   databaseURL: process.env.DATABASE_URL as string,
   authSecret: process.env.AUTH_SECRET as string,
+  smtpHost: process.env.SMTP_HOST as string,
+  smtpPort: Number(process.env.SMTP_PORT),
+  smtpUser: process.env.SMTP_USER as string,
+  smtpPass: process.env.SMTP_PASS as string,
 };
