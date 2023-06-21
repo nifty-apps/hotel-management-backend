@@ -20,13 +20,16 @@ export default class AuthService {
           pass: config.smtpPass,
         },
       });
-      await transporter.sendMail({
-        from: 'Booking Dei <raju@niftyitsolution.com>',
+      const emailInfo = await transporter.sendMail({
+        from: 'Booking Dei <noreply@bookingdei.com>',
         to: email,
         subject: 'OTP for email verification',
         text: `Your OTP for email verification is ${otp}`,
       });
-      return {message: 'OTP sent successfully!'};
+      if (emailInfo.accepted && emailInfo.accepted.length > 0) {
+        return {message: 'OTP sent successfully!'};
+      }
+      throw new Error('Failed to send OTP');
     } catch (error) {
       return error as Error;
     }
