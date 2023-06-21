@@ -35,7 +35,7 @@ export default class AuthService {
   async verifyOTP(email: string, code: number) {
     try {
       const otp = await OTP.findOneAndDelete({'email': email, 'otp': code});
-      if (!otp) return {message: 'Invalid OTP!'};
+      if (!otp) Error('Invalid OTP!');
       return {message: 'OTP verified successfully!'};
     } catch (error) {
       return error as Error;
