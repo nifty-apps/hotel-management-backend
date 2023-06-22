@@ -58,7 +58,7 @@ export default (app: Router) => {
       }
 
       return successRes({
-        res, message: 'Regiration successfuly!',
+        res, message: 'Account registered successfully',
         data: result,
         statusCode: 201,
       });
@@ -84,6 +84,21 @@ export default (app: Router) => {
       return successRes({res, message: 'Login successfuly', data: result.data});
     } catch (error) {
       errorRes({res, message: 'Server side error!'});
+    }
+  });
+  router.put('/update-password', async (req, res) => {
+    try {
+      const result =
+        await authService.updatePassword(req.body.email, req.body.newPassword);
+      if (result instanceof Error) {
+        return errorRes({res, message: result.message});
+      }
+      return successRes({
+        res, message: result.message,
+        statusCode: 201,
+      });
+    } catch (error) {
+      return errorRes({res: res, message: 'Internal server error!'});
     }
   });
 };
