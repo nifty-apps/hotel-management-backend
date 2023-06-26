@@ -38,7 +38,9 @@ export default class AuthService {
   async verifyOTP(email: string, code: number) {
     try {
       const otp = await OTP.findOneAndDelete({'email': email, 'otp': code});
-      if (!otp) return {message: 'Invalid OTP!'};
+      if (!otp) {
+        return Error('Invalid OTP!');
+      }
       return {message: 'OTP verified successfully!'};
     } catch (error) {
       return error as Error;
@@ -97,6 +99,21 @@ export default class AuthService {
         }
       }
       return {message: 'User not found!'};
+    } catch (error) {
+      return error as Error;
+    }
+  }
+
+  async updatePassword(email: string, newPassword: string) {
+    try {
+      const user = await User.findOne({email});
+      if (!user) {
+        return {message: 'User not found!'};
+      }
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashPassword;
+      await user.save();
+      return {message: 'Password updated successfully!'};
     } catch (error) {
       return error as Error;
     }

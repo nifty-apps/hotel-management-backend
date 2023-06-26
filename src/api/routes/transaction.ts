@@ -16,7 +16,7 @@ export default (app: Router) => {
         hotel: req.user.hotel,
       });
       if (result instanceof Error) {
-        return errorRes({res, message: 'Server side error!'});
+        return errorRes({res, message: result.message, statusCode: 403});
       }
       return successRes({
         res, message: 'The payment has been successfully created!',

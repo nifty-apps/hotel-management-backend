@@ -1,10 +1,31 @@
 import {ObjectId} from 'mongoose';
+import Booking from '../models/booking';
 import Transaction, {ITransaction} from '../models/transaction';
 
 export default class TransactionService {
   async createTransaction(transactionData: ITransaction) {
     try {
+      // check if booking exists
+      const booking = await Booking.findById(transactionData.booking);
+      if (!booking) {
+        throw new Error('Booking not found!');
+      }
+      const transactions =
+        await Transaction.find({booking: transactionData.booking});
+
+      // Total trasaction amount against this booking
+      const totalAmount = transactions.reduce((sum, transaction) =>
+        sum + transaction.amount, 0);
+      const amount = booking?.total - booking?.discount;
+      const payableAmount = amount - totalAmount;
+      if (payableAmount < transactionData.amount) {
+        return Error('Payable amount is ' + payableAmount);
+      }
       const transaction = await Transaction.create(transactionData);
+      if (payableAmount === transactionData.amount) {
+        booking.paymentStatus = 'paid';
+        await booking.save();
+      }
       return transaction;
     } catch (e) {
       return e as Error;
