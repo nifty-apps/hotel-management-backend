@@ -300,15 +300,19 @@ export default class RoomService {
   }
 
   async getRoomStatus(roomId: string, date: string) {
-    const startDate = moment(date, 'DD-MM-YYYY').startOf('day').toDate();
-    const endDate = moment(date, 'DD-MM-YYYY').endOf('day').toDate();
-
+    const startDate = moment(date, 'DD-MM-YYYY')
+      .hour(12).startOf('day').toDate();
+    const endDate = moment(date, 'DD-MM-YYYY')
+      .hour(12).endOf('day').subtract(1, 'millisecond').toDate();
     const bookings = await Booking.find({
       rooms: {$elemMatch: {$eq: new mongoose.Types.ObjectId(roomId)}},
       $or: [
-        {checkIn: {$lte: startDate}, checkOut: {$gte: startDate}},
-        {checkIn: {$gte: startDate, $lte: endDate}},
-        {checkOut: {$gte: startDate, $lte: endDate}},
+        {
+          checkIn: {$lt: endDate},
+          checkOut: {$gt: startDate},
+        },
+        {checkIn: {$gte: startDate, $lt: endDate}},
+        {checkOut: {$gt: startDate, $lt: endDate}},
       ],
     });
 

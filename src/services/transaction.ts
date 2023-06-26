@@ -22,9 +22,7 @@ export default class TransactionService {
         return Error('Payable amount is ' + payableAmount);
       }
       const transaction = await Transaction.create(transactionData);
-      const finalAmount = transactions.reduce((sum, transaction) =>
-        sum + transaction.amount, 0);
-      if (finalAmount === amount) {
+      if (payableAmount === transactionData.amount) {
         booking.paymentStatus = 'paid';
         await booking.save();
       }
