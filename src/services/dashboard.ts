@@ -3,6 +3,7 @@ import Booking from '../models/booking';
 import Room from '../models/room';
 import Transaction from '../models/transaction';
 
+//dashboard
 export default class DashboardService {
   async getDailyReport(hotelId: any) {
     try {
