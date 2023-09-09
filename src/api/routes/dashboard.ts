@@ -3,7 +3,7 @@ import DashboardService from '../../services/dashboard';
 import checkLogin from '../common/checkLogin';
 import {errorRes, successRes} from '../common/response';
 
-
+//dashboard
 export default (app: Router) => {
   const router = Router({mergeParams: true});
   app.use('/dashboard', router);
