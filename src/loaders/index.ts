@@ -3,6 +3,7 @@ import expressLoader from './express';
 import Logger from './logger';
 import mongooseLoader from './mongoose';
 
+// new change 
 export default async (app: Application) => {
   await mongooseLoader();
   Logger.info('🔌 DB connected!');
