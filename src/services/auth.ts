@@ -1,4 +1,4 @@
-
+// Authentication //
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import nodeMailer from 'nodemailer';
