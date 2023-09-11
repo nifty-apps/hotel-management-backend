@@ -75,7 +75,7 @@ export default class AuthService {
       return error as Error;
     }
   }
-
+// this is login
   async login(loginCredential: any) {
     try {
       const user = await User.findOne({
